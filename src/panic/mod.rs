@@ -1,5 +1,5 @@
-use core::panic::PanicInfo;
 use core::intrinsics::abort;
+use core::panic::PanicInfo;
 
 #[panic_handler]
 pub fn panic(_info: &PanicInfo) -> ! {
