@@ -1,0 +1,8 @@
+[package]
+name = "piztwo-os"
+version = "0.1.0"
+edition = "2021"
+authors = ["r1TOASTER"]
+
+[profile.dev]
+panic = "abort"
