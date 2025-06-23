@@ -3,6 +3,7 @@
 #![allow(internal_features)]
 #![feature(core_intrinsics)]
 
+mod buses;
 mod common;
 mod cpu;
 mod graphics;
