@@ -7,5 +7,8 @@ build:
 release:
 	cargo +nightly build --release
 
+fmt:
+	cargo +nightly fmt
+
 clean:
 	cargo clean
