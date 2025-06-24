@@ -30,14 +30,14 @@ macro_rules! rdwr {
 }
 
 rdwr!(u8(
-    reg: reg, mmio_read: "ldrb {val}, [{addr}]", mmio_write: "strb {val}, [{addr}]",
+    reg: reg, mmio_read: "ldrb {val:w}, [{addr}]", mmio_write: "strb {val:w}, [{addr}]",
 ));
 rdwr!(u16(
-    reg: reg, mmio_read: "ldrh {val}, [{addr}]", mmio_write: "strh {val}, [{addr}]",
+    reg: reg, mmio_read: "ldrh {val:w}, [{addr}]", mmio_write: "strh {val:w}, [{addr}]",
 ));
 rdwr!(u32(
-    reg: reg, mmio_read: "ldrw {val}, [{addr}]", mmio_write: "strw {val}, [{addr}]",
+    reg: reg, mmio_read: "ldr {val:w}, [{addr}]", mmio_write: "str {val:w}, [{addr}]",
 ));
 rdwr!(u64(
-    reg: reg, mmio_read: "ldr {val}, [{addr}]", mmio_write: "str {val}, [{addr}]",
+    reg: reg, mmio_read: "ldr {val:x}, [{addr}]", mmio_write: "str {val:x}, [{addr}]",
 ));
