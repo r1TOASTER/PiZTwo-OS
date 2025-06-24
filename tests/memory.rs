@@ -1,5 +1,3 @@
-use piztwo_os_lib::memory::mmio::{mmio_read, mmio_write};
-use core::assert_eq;
 
 static mut TEST_REG_32: u32 = 0;
 static mut TEST_REG_16: u16 = 0;
