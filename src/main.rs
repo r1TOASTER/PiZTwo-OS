@@ -1,5 +1,6 @@
-#![no_std]
-#![no_main]
+#![cfg_attr(not(test), no_std)]
+#![cfg_attr(not(test), no_main)]
+
 #![allow(internal_features)]
 #![feature(core_intrinsics)]
 
