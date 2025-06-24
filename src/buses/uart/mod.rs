@@ -1,6 +1,5 @@
 use core::result::Result;
 use core::option::Option;
-use core::intrinsics::atomic_store;
 
 const UART1_ENABLE: u8 = 0; 
 static mut UART1_ENABLED: bool = false;
@@ -21,14 +20,14 @@ pub fn uart1_init() {
     // if error, return
 
     // maybe mutex here - for atomic read and write
-    atomic_store(UART1_ENABLED, true);
+    // atomic_store(UART1_ENABLED, true);
 }
 
 pub fn uart1_enable() -> Result<(), UartErr> {
     // check if gpio initialized first
-    if atomic_load::<bool, Acquire>(UART1_ENABLED) == false {
-        return Err(UartErr::Init);
-    }
+    // if atomic_load::<bool, Acquire>(UART1_ENABLED) == false {
+    //     return Err(UartErr::Init);
+    // }
 
     // get AUXENB register - 0x7e21_5004
     // set bit UART1_ENABLE to 1

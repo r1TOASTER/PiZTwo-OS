@@ -1,5 +1,11 @@
-test:
-	cargo +nightly test
+test-lib:
+	cargo +nightly test --lib
+
+test-integration:
+	cargo +nightly test --test integration
+
+test: test-lib test-integration
+	@echo "All tests completed"
 
 build:
 	cargo +nightly build
