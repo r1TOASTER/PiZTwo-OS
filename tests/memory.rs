@@ -10,7 +10,7 @@ mod tests {
         unsafe {
             TEST_REG_32 = 1234567;
             let reg_addr: *mut u32 = &mut TEST_REG_32;
-            assert_eq!(mmio_read::<u32>(reg_addr), 1234567);
+            assert_eq!(u32::mmio_read(reg_addr), 1234567);
         }
     }
 
@@ -19,7 +19,7 @@ mod tests {
         unsafe {
             TEST_REG_16 = 12345;
             let reg_addr: *mut u16 = &mut TEST_REG_16;
-            assert_eq!(mmio_read::<u16>(reg_addr), 12345);
+            assert_eq!(u16::mmio_read(reg_addr), 12345);
         }
     }
 
@@ -28,7 +28,7 @@ mod tests {
         unsafe {
             TEST_REG_8 = 234;
             let reg_addr: *mut u8 = &mut TEST_REG_8;
-            assert_eq!(mmio_read::<u8>(reg_addr), 234);
+            assert_eq!(u8::mmio_read(reg_addr), 234);
         }
     }
 
@@ -37,7 +37,7 @@ mod tests {
         unsafe {
             TEST_REG_32 = 1234567;
             let reg_addr: *mut u32 = &mut TEST_REG_32;
-            mmio_write::<u32>(reg_addr, 1234569);
+            u32::mmio_write(reg_addr, 1234569);
             assert_eq!(TEST_REG_32, 1234569);
         }
     }
@@ -47,7 +47,7 @@ mod tests {
         unsafe {
             TEST_REG_16 = 1234;
             let reg_addr: *mut u16 = &mut TEST_REG_16;
-            mmio_write::<u16>(reg_addr, 1236);
+            u16::mmio_write(reg_addr, 1236);
             assert_eq!(TEST_REG_16, 1236);
         }
     }
@@ -57,7 +57,7 @@ mod tests {
         unsafe {
             TEST_REG_8 = 208;
             let reg_addr: *mut u8 = &mut TEST_REG_8;
-            mmio_write::<u8>(reg_addr, 210);
+            u8::mmio_write(reg_addr, 210);
             assert_eq!(TEST_REG_8, 210);
         }
     }
