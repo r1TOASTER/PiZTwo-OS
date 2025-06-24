@@ -1,6 +1,10 @@
 // This is to expose the crate for the tests dir
 
 #![no_std]
+#![no_main]
+
+#![allow(internal_features)]
+#![feature(core_intrinsics)]
 
 pub mod buses;
 pub mod common;
