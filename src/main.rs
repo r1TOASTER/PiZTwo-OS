@@ -23,8 +23,10 @@ pub fn panic(_info: &PanicInfo) -> ! {
     abort()
 }
 
+
+// TODO: define in boot.S
 #[no_mangle]
-pub extern "C" fn _start() -> ! {
+pub extern fn kernel_main() -> ! {
 
     loop {}
 }
