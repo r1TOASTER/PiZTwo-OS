@@ -5,3 +5,8 @@ isr ? gdt ? idt ? some tables ? paging ? check in the armv8a what is needed for 
 stack ? alignment ?
 call the kernel_main at the end (pass control to kernel in Rust)
 */
+
+.global _start
+
+_start:
+    mov x1, 0

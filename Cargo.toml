@@ -11,8 +11,9 @@ panic = "unwind"
 panic = "abort"
 
 [lib]
-name = "piztwo_os_lib"
+name = "piztwo"
 path = "src/lib.rs"
+crate-type = ["staticlib", "rlib"]
 test = false
 harness = false
 

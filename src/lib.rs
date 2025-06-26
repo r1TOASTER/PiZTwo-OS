@@ -17,3 +17,4 @@ pub mod net;
 pub mod peripherals;
 pub mod process;
 pub mod timer;
+pub mod kernel;

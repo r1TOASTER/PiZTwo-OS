@@ -1,12 +1,13 @@
 # Makefile for Rust project with nightly builds and Raspberry Pi BCM2837 entry
 
 # Configuration
-BUILD_DIR = output
 CARGO = cargo +nightly
 AS = aarch64-none-elf-as
 LD = aarch64-none-elf-ld
 QEMU = qemu-system-aarch64
 RUSTFLAGS = -C link-arg=-Tlinker.ld
+RUST_LIB = libpiztwo.rlib
+BUILD_DIR = output
 ENTRY_SRC = entry/entry.S
 ENTRY_OBJ = $(BUILD_DIR)/entry.o
 LINKER_SCRIPT = linker.ld
@@ -28,13 +29,13 @@ $(ENTRY_OBJ): $(ENTRY_SRC)
 .PHONY: build
 build: $(ENTRY_OBJ)
 	$(CARGO) build --target aarch64-unknown-none
-	$(LD) -T $(LINKER_SCRIPT) $(OUTPUT_DIR)/piztwo-os $(ENTRY_OBJ) -o $(KERNEL)
+	$(LD) -T $(LINKER_SCRIPT) $(OUTPUT_DIR)/$(RUST_LIB) $(ENTRY_OBJ) -o $(KERNEL)
 
 # Build release version and link with entry.S
 .PHONY: build-release
 build-release: $(ENTRY_OBJ)
 	$(CARGO) build --release --target aarch64-unknown-none
-	$(LD) -T $(LINKER_SCRIPT) $(OUTPUT_DIR_RELEASE)/piztwo-os $(ENTRY_OBJ) -o $(KERNEL_RELEASE)
+	$(LD) -T $(LINKER_SCRIPT) $(OUTPUT_DIR_RELEASE)/$(RUST_LIB) $(ENTRY_OBJ) -o $(KERNEL_RELEASE)
 
 # Run debug version
 .PHONY: run
@@ -50,7 +51,7 @@ run-release: build-release
 .PHONY: test-integration
 test-integration: $(ENTRY_OBJ)
 	$(CARGO) test --target aarch64-unknown-none --test integration
-	$(LD) -T $(LINKER_SCRIPT) $(OUTPUT_DIR)/piztwo-os $(ENTRY_OBJ) -o $(TEST_KERNEL)
+	$(LD) -T $(LINKER_SCRIPT) $(OUTPUT_DIR)/$(RUST_LIB) $(ENTRY_OBJ) -o $(TEST_KERNEL)
 
 # Run QEMU test
 .PHONY: qemu-test

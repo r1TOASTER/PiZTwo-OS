@@ -1,18 +1,4 @@
-#![no_std]
-#![no_main]
-
 #![allow(internal_features)]
-#![feature(core_intrinsics)]
-
-mod buses;
-mod common;
-mod cpu;
-mod graphics;
-mod interrupt;
-mod ipc;
-mod memory;
-mod net;
-mod process;
 
 use core::intrinsics::abort;
 use core::panic::PanicInfo;
@@ -26,7 +12,7 @@ pub fn panic(_info: &PanicInfo) -> ! {
 
 // TODO: define in entry.S
 #[no_mangle]
-pub extern fn kernel_main() -> ! {
+pub extern "C" fn kernel_main() -> ! {
 
     loop {}
 }
