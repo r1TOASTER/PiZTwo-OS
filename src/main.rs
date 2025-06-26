@@ -24,7 +24,7 @@ pub fn panic(_info: &PanicInfo) -> ! {
 }
 
 
-// TODO: define in boot.S
+// TODO: define in entry.S
 #[no_mangle]
 pub extern fn kernel_main() -> ! {
 
