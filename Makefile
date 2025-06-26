@@ -16,6 +16,7 @@ OUTPUT_DIR_RELEASE = target/aarch64-unknown-none/release
 KERNEL = $(BUILD_DIR)/kernel.elf
 KERNEL_RELEASE = $(BUILD_DIR)/kernel-release.elf
 TEST_KERNEL = $(BUILD_DIR)/test-kernel.elf
+LINKING_FLAGS = -nostdlib
 
 # Default target
 .PHONY: all
@@ -29,18 +30,18 @@ $(ENTRY_OBJ): $(ENTRY_SRC)
 .PHONY: build
 build: $(ENTRY_OBJ)
 	$(CARGO) build --target aarch64-unknown-none
-	$(LD) -T $(LINKER_SCRIPT) $(OUTPUT_DIR)/$(RUST_LIB) $(ENTRY_OBJ) -o $(KERNEL)
+	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ENTRY_OBJ) $(OUTPUT_DIR)/$(RUST_LIB) -o $(KERNEL)
 
 # Build release version and link with entry.S
 .PHONY: build-release
 build-release: $(ENTRY_OBJ)
 	$(CARGO) build --release --target aarch64-unknown-none
-	$(LD) -T $(LINKER_SCRIPT) $(OUTPUT_DIR_RELEASE)/$(RUST_LIB) $(ENTRY_OBJ) -o $(KERNEL_RELEASE)
+	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ENTRY_OBJ) $(OUTPUT_DIR_RELEASE)/$(RUST_LIB) -o $(KERNEL_RELEASE)
 
 # Run debug version
 .PHONY: run
 run: build
-	$(QEMU) -M raspi3b -kernel $(KERNEL) -serial stdio -display none
+	$(QEMU) -M raspi3b -semihosting -kernel $(KERNEL) -serial stdio -display none
 
 # Run release version
 .PHONY: run-release
@@ -51,7 +52,7 @@ run-release: build-release
 .PHONY: test-integration
 test-integration: $(ENTRY_OBJ)
 	$(CARGO) test --target aarch64-unknown-none --test integration
-	$(LD) -T $(LINKER_SCRIPT) $(OUTPUT_DIR)/$(RUST_LIB) $(ENTRY_OBJ) -o $(TEST_KERNEL)
+	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ENTRY_OBJ) $(OUTPUT_DIR)/$(RUST_LIB) -o $(TEST_KERNEL)
 
 # Run QEMU test
 .PHONY: qemu-test
