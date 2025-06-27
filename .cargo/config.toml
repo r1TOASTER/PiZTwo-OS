@@ -6,3 +6,4 @@ build-std = ["core"]
 
 [target.aarch64-unknown-none]
 runner = "qemu-system-aarch64 -M raspi3b -serial stdio -display none -kernel"
+linker = "linker.ld"
