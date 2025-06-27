@@ -16,7 +16,7 @@ fn uart1_gpio_init() {
 }
 
 /// brief - initalizing uart1 GPIO and setting the enabled flag
-pub fn uart1_init() {
+pub(crate) fn uart1_init() {
     // set gpio pins
 
     // enable the peripheral on 0x7E21_5004 bit 0 -> turn on
@@ -35,7 +35,7 @@ pub fn uart1_init() {
     // enable interrupts
 }
 
-pub fn uart1_enable() -> bool {
+pub(crate) fn uart1_enable() -> bool {
     // check if gpio initialized first
     // if atomic_load::<bool, Acquire>(UART1_ENABLED) == false {
     //     return Err(UartErr::Init);
@@ -47,16 +47,16 @@ pub fn uart1_enable() -> bool {
     return true;
 }
 
-pub fn uart1_disable() {
-    todo!()
+pub(crate) fn uart1_disable() {
+    panic!();
 }
 
 /// uart1 recv byte
-pub fn uart1_recv() -> Option<u8> {
+pub(crate) fn uart1_recv() -> Option<u8> {
     todo!()
 }
 
 /// uart1 send byte
-pub fn uart1_send(data: u8) {
+pub(crate) fn uart1_send(_data: u8) {
     todo!()
 }

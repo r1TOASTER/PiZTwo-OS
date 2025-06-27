@@ -5,62 +5,76 @@ CARGO = cargo +nightly
 AS = aarch64-none-elf-as
 LD = aarch64-none-elf-ld
 QEMU = qemu-system-aarch64
-RUSTFLAGS = -C link-arg=-Tlinker.ld
-RUST_LIB = libpiztwo.rlib
 BUILD_DIR = output
-ENTRY_SRC = entry/entry.S
-ENTRY_OBJ = $(BUILD_DIR)/entry.o
-LINKER_SCRIPT = linker.ld
-OUTPUT_DIR = target/aarch64-unknown-none/debug
+
+# Assembly #
+ASM_DIR = asm
+ASM_SRC = $(wildcard $(ASM_DIR)/*.S)
+ASM_OBJ = $(patsubst $(ASM_DIR)/%.S,$(BUILD_DIR)/%.o,$(ASM_SRC))
+
+# Cargo Outputs directories #
+OUTPUT_DIR_DEBUG = target/aarch64-unknown-none/debug
 OUTPUT_DIR_RELEASE = target/aarch64-unknown-none/release
+
+# Cargo Outputs files names
+KERNEL_LIB_NAME = libkernel.rlib
+TEST_LIB_NAME = libtests.rlib
+
+# Cargo Outputs files names #
+KERNEL_LIB_FULL_PATH_DEBUG = $(OUTPUT_DIR_DEBUG)/$(KERNEL_LIB_NAME)
+KERNEL_LIB_FULL_PATH_RELEASE = $(OUTPUT_DIR_RELEASE)/$(KERNEL_LIB_NAME)
+TEST_LIB_FULL_PATH = $(OUTPUT_DIR_DEBUG)/$(TEST_LIB_NAME)
+
+# Output images #
 KERNEL = $(BUILD_DIR)/kernel.elf
 KERNEL_RELEASE = $(BUILD_DIR)/kernel-release.elf
 TEST_KERNEL = $(BUILD_DIR)/test-kernel.elf
-LINKING_FLAGS = -nostdlib
+
+# Linking #
+LINKER_SCRIPT = linker.ld
+LINKING_FLAGS = -nostdlib -L/usr/local/lib -l:libgcc.a # -ffreestanding -shared
+# In case linking against libgcc, flag is provided above, add in .cargo/config.toml too (rustflags) 
+# The libgcc is in: /usr/local/lib/libgcc.a (from the arm-gnu toolchain)
+
+# Make sure output dir exists
+$(shell mkdir -p $(BUILD_DIR))
+
+$(BUILD_DIR)/%.o: $(ASM_DIR)/%.S
+	$(AS) $< -o $@
 
 # Default target
 .PHONY: all
 all: build
 
-# Assemble entry.S file into object file
-$(ENTRY_OBJ): $(ENTRY_SRC)
-	$(AS) $(ENTRY_SRC) -o $(ENTRY_OBJ)
-
-# Build debug version and link with entry.S
 .PHONY: build
-build: $(ENTRY_OBJ)
-	$(CARGO) build --target aarch64-unknown-none
-	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ENTRY_OBJ) $(OUTPUT_DIR)/$(RUST_LIB) -o $(KERNEL)
+build: $(ASM_OBJ)
+	$(CARGO) build --target aarch64-unknown-none --manifest-path kernel/Cargo.toml
+	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ASM_OBJ) $(KERNEL_LIB_FULL_PATH_DEBUG) -o $(KERNEL)
 
-# Build release version and link with entry.S
 .PHONY: build-release
-build-release: $(ENTRY_OBJ)
-	$(CARGO) build --release --target aarch64-unknown-none
-	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ENTRY_OBJ) $(OUTPUT_DIR_RELEASE)/$(RUST_LIB) -o $(KERNEL_RELEASE)
+build-release: $(ASM_OBJ)
+	$(CARGO) build --release --target aarch64-unknown-none --manifest-path kernel/Cargo.toml
+	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ASM_OBJ) $(KERNEL_LIB_FULL_PATH_RELEASE) -o $(KERNEL_RELEASE)
 
-# Run debug version
 .PHONY: run
 run: build
 	$(QEMU) -M raspi3b -semihosting -kernel $(KERNEL) -serial stdio -display none
 
-# Run release version
 .PHONY: run-release
 run-release: build-release
 	$(QEMU) -M raspi3b -kernel $(KERNEL_RELEASE) -serial stdio -display none
 
-# Build and run integration test, then link with entry.S
 .PHONY: test-integration
-test-integration: $(ENTRY_OBJ)
-	$(CARGO) test --target aarch64-unknown-none --test integration
-	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ENTRY_OBJ) $(OUTPUT_DIR)/$(RUST_LIB) -o $(TEST_KERNEL)
+test-integration: $(ASM_OBJ)
+	$(CARGO) build --target aarch64-unknown-none --manifest-path tests/Cargo.toml
+	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ASM_OBJ) $(TEST_LIB_FULL_PATH) -o $(TEST_KERNEL)
 
-# Run QEMU test
 .PHONY: qemu-test
 qemu-test: test-integration
 	$(QEMU) -M raspi3b -kernel $(TEST_KERNEL) -serial stdio -display none
 
-# Clean build artifacts
 .PHONY: clean
 clean:
 	$(CARGO) clean
-	rm -f $(BUILD_DIR)/*
+	rm -rf $(BUILD_DIR)/*
+	rm -f Cargo.lock

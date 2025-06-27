@@ -5,5 +5,13 @@ target = "aarch64-unknown-none.json"
 build-std = ["core"]
 
 [target.aarch64-unknown-none]
-runner = "qemu-system-aarch64 -M raspi3b -serial stdio -display none -kernel"
-linker = "linker.ld"
+linker = "aarch64-none-elf-ld"
+rustflags = [
+    "-C", "no-prepopulate-passes",
+    "-C", "panic=abort",
+    "-Z", "ub-checks=false",
+    "-C", "no-redzone",
+    "-C", "force-frame-pointers=no",
+    "-C", "link-arg=-Tlinker.ld",
+    "-A", "missing_abi"
+]

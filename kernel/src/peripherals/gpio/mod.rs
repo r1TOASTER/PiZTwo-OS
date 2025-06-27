@@ -9,10 +9,10 @@
 use crate::memory::mmio::RegSized;
 use core::{{marker::Copy}, {clone::Clone}, {fmt::Debug}};
 
-const GPFSEL0: usize = 0x7E20_0000;
+const GPFSEL0: u32 = 0x7E20_0000;
 
 #[derive(Copy, Clone, Debug)]
-pub enum GpioPin {
+pub(crate) enum GpioPin {
     Pin00 = 0,
     Pin01,
     Pin02,
@@ -71,7 +71,7 @@ pub enum GpioPin {
 
 // defenitions by GPFSELn, page 91
 #[derive(Copy, Clone, Debug)]
-pub enum GpioState {
+pub(crate) enum GpioState {
     Input = 0b000,
     Output = 0b001,
     Alt0 = 0b100,
@@ -83,9 +83,9 @@ pub enum GpioState {
 }
 
 // TODO: write unit tests
-pub fn gpio_select_mode(pin: GpioPin, state: GpioState) {
-    let reg_offset = ((pin as u8) / 10) * 4; // 32 bit register, offset times 4 + base of GPFSEL0
-    let reg = GPFSEL0 + reg_offset as usize;
+pub(crate) fn gpio_select_mode(pin: GpioPin, state: GpioState) {
+    let reg_offset: u32 = ((pin as u32) / 10) * 4; // 32 bit register, offset times 4 + base of GPFSEL0
+    let reg = (GPFSEL0 + reg_offset) as *mut u32;
 
     let bit_offset = ((pin as u8) % 10) * 3; // every mode is 3 bit, offset times 3 + base of register (bit 0)
 

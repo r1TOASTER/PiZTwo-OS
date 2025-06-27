@@ -1,23 +1,4 @@
-[package]
-name = "piztwo-os"
-version = "0.1.0"
-edition = "2021"
-authors = ["r1TOASTER"]
-
-[profile.dev]
-panic = "unwind"
-
-[profile.release]
-panic = "abort"
-
-[lib]
-name = "piztwo"
-path = "src/lib.rs"
-crate-type = ["staticlib", "rlib"]
-test = false
-harness = false
-
-[[test]]
-name = "integration"
-path = "tests/lib.rs"
-harness = false
+[workspace]
+members = ["kernel", "tests"]
+resolver = "2"
+package.authors = ["r1TOASTER"]
