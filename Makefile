@@ -60,7 +60,6 @@ run: build
 	-serial stdio \
 	-display none \
 	-S -gdb tcp::9999 \
-	-monitor telnet:localhost:1234,server,nowait
 
 .PHONY: run-release
 run-release: build-release
