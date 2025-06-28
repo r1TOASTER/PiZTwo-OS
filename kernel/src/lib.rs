@@ -39,8 +39,8 @@ fn panic(_info: &PanicInfo) -> ! {
 }
 
 // imports from raw assembly
-#[allow(missing_abi)]
 unsafe extern {
+    unsafe fn _prints_qemu(s: *const u8);
     unsafe fn _exit_qemu();
 }
 
@@ -48,5 +48,9 @@ unsafe extern {
 #[inline(never)]
 pub fn kernel_main() -> ! {
     // kernel main entry point, after entry.S initiallization
+    unsafe {
+        _prints_qemu(b"[Main Kernel]\n\0".as_ptr());
+    }
+    
     loop {}
 }

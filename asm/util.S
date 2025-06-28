@@ -10,18 +10,6 @@ _exit_qemu:
 .global _prints_qemu
 _prints_qemu:
     // get user's string data from register
-    ldur    x0, [x1] 
+    ldur    x1, [x0] 
     mov     x0, #0x04
-    hlt     0xf000
-
-.global memcpy
-memcpy:
-    // x0: destination, x1: source, x2: length
-    cbz x2, .Lmemcpy_done
-.Lmemcpy_loop:
-    ldrb w3, [x1], #1
-    strb w3, [x0], #1
-    subs x2, x2, #1
-    bne .Lmemcpy_loop
-.Lmemcpy_done:
-    ret
+    hlt     #0xf000

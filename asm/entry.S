@@ -10,7 +10,5 @@
 
 .global _start
 _start:
-    ldr     x0, =0x80000
-    
-    mov     sp, x0 // check why SP like that
+    mov     sp, 0x8000 // check why SP like that
     bl      kernel_main

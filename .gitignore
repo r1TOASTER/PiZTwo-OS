@@ -1,4 +1,4 @@
 /target
 /.vscode
 /output
-output/entry.o
+/output-test

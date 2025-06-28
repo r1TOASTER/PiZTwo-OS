@@ -1,4 +1,4 @@
 [workspace]
-members = ["kernel", "tests"]
+members = ["kernel"] # upcoming usermode / drivers crates
 resolver = "2"
 package.authors = ["r1TOASTER"]
