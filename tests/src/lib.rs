@@ -9,8 +9,7 @@
 #![reexport_test_harness_main = "kernel_main"]
 
 // imports from raw assembly
-#[allow(missing_abi)]
-unsafe extern {
+unsafe extern "C" {
     unsafe fn _exit_qemu();
     unsafe fn _prints_qemu(s: *const u8);
 }
@@ -25,33 +24,30 @@ pub fn kernel_main() {
 
     unsafe { _exit_qemu(); }
     
-    // memory mod tests
-    let memory_tests: &[&dyn Fn()] = &[
-        &memory::test_read_08,
-        &memory::test_read_16,
-        &memory::test_read_32,
-        &memory::test_write_08,
-        &memory::test_write_16,
-        &memory::test_write_32,
+    // every mod's test main
+    let main_test_functions: &[&dyn Fn()] = &[
+        &memory::memory_test_main,
     ];
 
-    test_runner(memory_tests);
+    test_runner(main_test_functions);
 }
+
+static STARTING_TESTS: &[u8] = b"Starting Tests\n\0";
 
 // Custom test runner
 fn test_runner(tests: &[&dyn Fn()]) {
 
     unsafe {
-        _prints_qemu("Starting Tests\n\x00".as_ptr());
+        _prints_qemu(STARTING_TESTS.as_ptr());
     }
     
-    for test in tests {
+    for test_mains in tests {
         // let current_test_str = "Doing test num: {i}\n\x00";
         // unsafe {
         //     TODO: implement a formatter to print shit
         //     _prints_qemu("Doing test num: \n\x00".as_ptr());
         // }
-        test();
+        test_mains();
     }
 
     loop {}

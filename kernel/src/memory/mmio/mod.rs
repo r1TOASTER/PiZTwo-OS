@@ -4,10 +4,10 @@ use core::marker::Sized;
 
 pub trait RegSized: Sized {
     unsafe fn mmio_read(addr: *const Self) -> Self {
-        core::ptr::read_volatile(addr)
+        core::intrinsics::volatile_load(addr)
     }
     unsafe fn mmio_write(addr: *mut Self, value: Self) {
-        core::ptr::write_volatile(addr, value);
+        core::intrinsics::volatile_store(addr, value);
     }
 }
 

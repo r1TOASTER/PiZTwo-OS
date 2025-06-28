@@ -6,8 +6,15 @@
 #![feature(ptr_metadata)]
 #![feature(lang_items)]
 
-#[lang = "eh_personality"] extern fn eh_personality() {}
-#[no_mangle] pub extern fn __aeabi_unwind_cpp_pr0() {}
+// #[lang = "eh_personality"]
+// extern fn eh_personality() {}
+
+// #[no_mangle]
+// pub extern fn __aeabi_unwind_cpp_pr0() {}
+
+// #[allow(non_snake_case)]
+// #[no_mangle]
+// pub extern fn _Unwind_Resume() { loop {} }
 
 // export?
 pub mod buses;
@@ -26,7 +33,7 @@ use core::intrinsics::abort;
 use core::panic::PanicInfo;
 
 #[panic_handler]
-pub fn panic(_info: &PanicInfo) -> ! {
+fn panic(_info: &PanicInfo) -> ! {
     // TODO: panic message print to console
     abort()
 }
