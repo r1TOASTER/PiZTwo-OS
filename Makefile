@@ -26,10 +26,11 @@ KERNEL_LIB_FULL_PATH_RELEASE = $(OUTPUT_DIR_RELEASE)/$(KERNEL_LIB_NAME)
 # Output images #
 KERNEL = $(BUILD_DIR)/kernel.elf
 KERNEL_RELEASE = $(BUILD_DIR)/kernel-release.elf
+KERNEL_IMG = $(BUILD_DIR)/kernel8.img
 
 # Linking #
 LINKER_SCRIPT = linker.ld
-LINKING_FLAGS = -nostdlib# -L/usr/local/lib -l:libgcc.a # -ffreestanding -shared
+LINKING_FLAGS = -nostdlib -g# -L/usr/local/lib -l:libgcc.a # -ffreestanding -shared
 # In case linking against libgcc, flag is provided above, add in .cargo/config.toml too (rustflags) 
 # The libgcc is in: /usr/local/lib/libgcc.a (from the arm-gnu toolchain)
 
@@ -48,22 +49,29 @@ all: build
 build: $(ASM_OBJ)
 	$(CARGO) build --target aarch64-unknown-none --manifest-path kernel/Cargo.toml
 	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ASM_OBJ) $(KERNEL_LIB_FULL_PATH_DEBUG) -o $(KERNEL)
+	aarch64-none-elf-objcopy --strip-all $(KERNEL) -O binary $(KERNEL_IMG)
 
 .PHONY: build-release
 build-release: $(ASM_OBJ)
 	$(CARGO) build --release --target aarch64-unknown-none --manifest-path kernel/Cargo.toml
 	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ASM_OBJ) $(KERNEL_LIB_FULL_PATH_RELEASE) -o $(KERNEL_RELEASE)
+	aarch64-none-elf-objcopy --strip-all $(KERNEL_RELEASE) -O binary $(KERNEL_IMG)
 
 .PHONY: run
 run: build
-	$(QEMU) -M raspi3b -kernel $(KERNEL) \
+	$(QEMU) -M raspi3b -kernel $(KERNEL_IMG) \
+	-semihosting \
 	-serial stdio \
 	-display none \
+	-cpu cortex-a53 \
 	-S -gdb tcp::9999 \
 
 .PHONY: run-release
 run-release: build-release
-	$(QEMU) -M raspi3b -kernel $(KERNEL_RELEASE) -serial stdio -display none
+	$(QEMU) -M raspi3b -kernel $(KERNEL_IMG) \
+	-serial stdio \
+	-display none \
+	-cpu cortex-a53 \
 
 .PHONY: clean
 clean:
