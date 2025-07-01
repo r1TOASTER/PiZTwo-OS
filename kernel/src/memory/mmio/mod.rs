@@ -12,8 +12,7 @@ pub trait RegSized: Sized {
 }
 
 impl RegSized for u32 {}
-impl RegSized for u16 {}
-impl RegSized for u8 {}
+impl RegSized for u64 {}
 
 // macro_rules! rdwr {
 //     ($t:ident($(reg: $reg_cls:ident, mmio_read: $patrd:literal, mmio_write: $patwr:literal),* $(,)?)) => {
