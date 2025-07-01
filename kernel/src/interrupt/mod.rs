@@ -6,6 +6,21 @@
 /// TODO: check if needed for every exeception level (rings, EL0 [usermode] to EL3 [kernel]) and mode (AArch64 vs AArch32)
 /// TODO: test all with SP, PC, and such
 /// TODO: Memory alignment for the EVT with enough space for entries - for aarch64: 2KB, for aarch32: 1KB
+/// TODO: When EVT all setup - change Makefile to use -device loader instead of -kernel (real hardware mode with EL3 and self EVT)
+
+/*  -- can be kernel8.img instead of kernel.elf
+    -- peripherals would be at different locations, beware - need to test on real hardware
+    qemu-system-aarch64 \
+        -M virt \
+        -cpu cortex-a53 \
+        -nographic \
+        -m 512M \
+        -smp 1 \
+        -bios none \
+        -device loader,file=kernel.elf,addr=0x80000,cpu-num=0 \
+        -semihosting-config enable=on,target=native \
+        -S -gdb tcp::9999
+*/
 
 /// INFO:
 /// https://www.linkedin.com/advice/0/how-do-you-configure-exception-vector-table-armv8-a
