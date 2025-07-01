@@ -7,8 +7,5 @@ file output/kernel.elf
 # Remotely connect to QEMU exposed GDB
 target remote localhost:9999
 
-# Set threads to 1 - implement self scheduler later
-set scheduler-locking on
-
 # Break on entry point, -S flag in QEMU holding the CPU before first breakpoint, continue to start
 break _start

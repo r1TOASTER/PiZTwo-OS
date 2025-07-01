@@ -13,5 +13,6 @@ rustflags = [
     # "-C", "no-redzone",
     # "-C", "force-frame-pointers=no",
     "-C", "link-arg=-Tlinker.ld",
-    "-A", "missing_abi"
+    "-A", "missing_abi",
+    "-C", "opt-level=z"
 ]

@@ -49,27 +49,29 @@ all: build
 build: $(ASM_OBJ)
 	$(CARGO) build --target aarch64-unknown-none --manifest-path kernel/Cargo.toml
 	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ASM_OBJ) $(KERNEL_LIB_FULL_PATH_DEBUG) -o $(KERNEL)
-	aarch64-none-elf-objcopy --strip-all $(KERNEL) -O binary $(KERNEL_IMG)
+	aarch64-none-elf-objcopy -O binary $(KERNEL) $(KERNEL_IMG)
 
 .PHONY: build-release
 build-release: $(ASM_OBJ)
 	$(CARGO) build --release --target aarch64-unknown-none --manifest-path kernel/Cargo.toml
 	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ASM_OBJ) $(KERNEL_LIB_FULL_PATH_RELEASE) -o $(KERNEL_RELEASE)
-	aarch64-none-elf-objcopy --strip-all $(KERNEL_RELEASE) -O binary $(KERNEL_IMG)
+	aarch64-none-elf-objcopy -O binary $(KERNEL_RELEASE) $(KERNEL_IMG)
 
 .PHONY: run
 run: build
-	$(QEMU) -M raspi3b -kernel $(KERNEL_IMG) \
-	-semihosting \
-	-serial stdio \
+	$(QEMU) -M raspi3b \
+	-kernel $(KERNEL_IMG) \
+	-semihosting-config enable=on,target=native \
+	-serial none -serial mon:stdio \
 	-display none \
 	-cpu cortex-a53 \
 	-S -gdb tcp::9999 \
 
 .PHONY: run-release
 run-release: build-release
-	$(QEMU) -M raspi3b -kernel $(KERNEL_IMG) \
-	-serial stdio \
+	$(QEMU) -M raspi3b \
+	-kernel $(KERNEL_IMG) \
+	-serial none -serial mon:stdio \
 	-display none \
 	-cpu cortex-a53 \
 
