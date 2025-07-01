@@ -38,7 +38,7 @@ pub struct ExceptionVectorTable {
 }
 
 #[used]
-#[link_section = ".evt"]
+#[link_section = ".evt"] // maybe not pub?
 pub static EVT: ExceptionVectorTable = ExceptionVectorTable {
 
 };
