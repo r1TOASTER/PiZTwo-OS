@@ -36,3 +36,9 @@ The exception vector table base address is stored in the VBAR register.
 pub struct ExceptionVectorTable {
 
 }
+
+#[used]
+#[link_section = ".evt"]
+pub static EVT: ExceptionVectorTable = ExceptionVectorTable {
+
+};
