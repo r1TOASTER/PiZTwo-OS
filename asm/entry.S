@@ -1,8 +1,10 @@
 /* 
+    EVERTYTHING HERE: for all cores
+    TODO: different PC and SP based on defined stack size per core, and kernel schedualing
     TODO: clear bss
-    TODO: mov to x_data whatever defined as rodata / data / edata
-    TODO: stack pointer alignment
-    TODO: check interrupt needs
+    TODO: mov to .data whatever defined as rodata / data (maybe not rodata)
+    TODO: stack pointer alignment and assignment (changed for cores)
+    TODO: EVT check? ISRs? check execution levels!
     TODO: check if any other init needed
 */
 
