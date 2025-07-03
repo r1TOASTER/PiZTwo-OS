@@ -12,7 +12,8 @@
 
 .global _start
 _start:
-    mrs     x0, MPIDR_EL1 // read the MPIDR_EL1 system reg to x5 - 64 bit
+    // TODO: MPIDR_EL3 maybe?
+    mrs     x0, MPIDR_EL1 // read the MPIDR_EL1 (3??) system reg to x5 - 64 bit
     // bits 0-7 (Aff0) holding the current core id
     and     x0, x0, #0xff
     // if the core is zero, branch to kernel_main
