@@ -21,7 +21,7 @@ pub mod buses;
 pub mod common;
 pub mod cpu;
 pub mod graphics;
-pub mod interrupt;
+pub mod exceptions;
 pub mod memory;
 pub mod net;
 pub mod peripherals;
