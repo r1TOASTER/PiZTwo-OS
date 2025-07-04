@@ -16,7 +16,12 @@
 
 .global _start
 _start:
-    // TODO: MPIDR_EL3 maybe?
+    // TODO: disable EL2 (no current hypervisor needed)
+    
+    // TODO: configure VBAR registers for EVTs memory (linker script variables)
+
+    // TODO: interrup enable
+    
     mrs     x0, MPIDR_EL1 // read the MPIDR_EL1 (3??) system reg to x5 - 64 bit
     // bits 0-7 (Aff0) holding the current core id
     and     x0, x0, #0xff

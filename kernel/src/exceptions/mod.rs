@@ -47,16 +47,33 @@ In AArch32 mode, the exception vector table consists of eight 32-bit entries, ea
 The exception vector table base address is stored in the VBAR register.
 */
 
-// for AArch64
+// for AArch64 - no need for aarch32 implementation - in the EVT there is a subgroup for exception taken from lower EL using aarch32 (only EL0)
+// each entry is 32 instructions: save corruptible registers, call exception specific handler, restore registers, call eret.
+
+// TODO: check for masking / unmasking
+// first - saving registers - using SP of current EL (SP_ELx) - 1 or 3, whether EL the exception is taken to
+// then - switch to SP_EL0 for any further processing (should be cleaned later?)
+// then - after the handling, pop every register used in SP_EL0
+// then - switch back to SP_ELx and pop every saved register
+// then - ERET
 #[repr(C)]
-pub struct ExceptionVectorTable64 {
-
-}
-
-// for AArch32
-#[repr(C)]
-pub struct ExceptionVectorTable32 {
-
+pub struct ExceptionVectorTable {
+    curel_spel0_sync: [u32; 32],
+    curel_spel0_irq: [u32; 32],
+    curel_spel0_fiq: [u32; 32],
+    curel_spel0_serror: [u32; 32],
+    curel_spelx_sync: [u32; 32],
+    curel_spelx_irq: [u32; 32],
+    curel_spelx_fiq: [u32; 32],
+    curel_spelx_serror: [u32; 32],
+    lowel_aarch64_sync: [u32; 32],
+    lowel_aarch64_irq: [u32; 32],
+    lowel_aarch64_fiq: [u32; 32],
+    lowel_aarch64_serror: [u32; 32],
+    lowel_aarch32_sync: [u32; 32],
+    lowel_aarch32_irq: [u32; 32],
+    lowel_aarch32_fiq: [u32; 32],
+    lowel_aarch32_serror: [u32; 32],
 }
 
 // TODO: EVT per EL -> holded by VBAR_ELx register (needed to elevate from ELx to ELx+1 and decrease when ret from ELx+1 to ELx)
@@ -71,28 +88,14 @@ pub struct ExceptionVectorTable32 {
     TODO: EVTs for AArch32 in EL1 (so user apps in EL0 can support AArch32)
 */
 
-// link section at the format of '.evtX.elX' where the first x is the ES and the second X is the EL
-
 #[used]
-#[link_section = ".evt32.el1"] // maybe not pub?
-pub static EVT32_EL1: ExceptionVectorTable32 = ExceptionVectorTable32 {
+#[link_section = ".evt64"]
+static EVT64_EL1: ExceptionVectorTable = ExceptionVectorTable {
 
 };
 
 #[used]
-#[link_section = ".evt64.el1"] // maybe not pub?
-pub static EVT64_EL1: ExceptionVectorTable64 = ExceptionVectorTable64 {
-
-};
-
-#[used]
-#[link_section = ".evt64.el2"] // maybe not pub?
-pub static EVT64_EL2: ExceptionVectorTable64 = ExceptionVectorTable64 {
-
-};
-
-#[used]
-#[link_section = ".evt64.el3"] // maybe not pub?
-pub static EVT64_EL3: ExceptionVectorTable64 = ExceptionVectorTable64 {
+#[link_section = ".evt64"]
+static EVT64_EL3: ExceptionVectorTable = ExceptionVectorTable {
 
 };

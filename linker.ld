@@ -1,5 +1,11 @@
 ENTRY(_start)
 
+/*
+    TODO: add .evt64 section (inside the .text)
+    TODO: add .evt64 section variable (for the entry.S to handle configuration)
+    TODO: add the RAM memory range for the RPi z2w
+*/
+
 SECTIONS {
     . = 0x80000;
 
