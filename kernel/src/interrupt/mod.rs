@@ -47,13 +47,52 @@ In AArch32 mode, the exception vector table consists of eight 32-bit entries, ea
 The exception vector table base address is stored in the VBAR register.
 */
 
+// for AArch64
 #[repr(C)]
-pub struct ExceptionVectorTable {
+pub struct ExceptionVectorTable64 {
 
 }
 
+// for AArch32
+#[repr(C)]
+pub struct ExceptionVectorTable32 {
+
+}
+
+// TODO: EVT per EL -> holded by VBAR_ELx register (needed to elevate from ELx to ELx+1 and decrease when ret from ELx+1 to ELx)
+/*
+    EVT_EL1
+    EVT_EL2
+    EVT_EL3
+
+    I Think! (no need for EVT_EL0 cause when exception occures on EL0 it will go to EVT_EL1)
+    Needed to check for exception on EL3 (where it goes? EVT_EL3? or is it an EVT_EL0?)
+
+    TODO: EVTs for AArch32 in EL1 (so user apps in EL0 can support AArch32)
+*/
+
+// link section at the format of '.evtX.elX' where the first x is the ES and the second X is the EL
+
 #[used]
-#[link_section = ".evt"] // maybe not pub?
-pub static EVT: ExceptionVectorTable = ExceptionVectorTable {
+#[link_section = ".evt32.el1"] // maybe not pub?
+pub static EVT32_EL1: ExceptionVectorTable32 = ExceptionVectorTable32 {
+
+};
+
+#[used]
+#[link_section = ".evt64.el1"] // maybe not pub?
+pub static EVT64_EL1: ExceptionVectorTable64 = ExceptionVectorTable64 {
+
+};
+
+#[used]
+#[link_section = ".evt64.el2"] // maybe not pub?
+pub static EVT64_EL2: ExceptionVectorTable64 = ExceptionVectorTable64 {
+
+};
+
+#[used]
+#[link_section = ".evt64.el3"] // maybe not pub?
+pub static EVT64_EL3: ExceptionVectorTable64 = ExceptionVectorTable64 {
 
 };
