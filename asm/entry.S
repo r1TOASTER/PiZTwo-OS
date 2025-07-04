@@ -6,6 +6,10 @@
     TODO: stack pointer alignment and assignment (changed for cores)
     TODO: EVT check? ISRs? check execution levels!
     TODO: check if any other init needed
+    TODO: reset GPRs?
+    TODO: MMU and caches init?
+    TODO: NEON and FP init?
+    TODO: change exception level? or still in kernel mode
 */
 
 .section .text
