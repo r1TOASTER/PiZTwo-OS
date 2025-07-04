@@ -1,0 +1,1 @@
+// TODO: using translation tables, check against privilege (EL0 - unprivileged, EL1 to EL3 - privileged)
