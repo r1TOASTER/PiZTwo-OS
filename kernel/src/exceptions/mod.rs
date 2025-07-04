@@ -56,24 +56,24 @@ The exception vector table base address is stored in the VBAR register.
 // then - after the handling, pop every register used in SP_EL0
 // then - switch back to SP_ELx and pop every saved register
 // then - ERET
-#[repr(C)]
+#[repr(C, packed(4))]
 pub struct ExceptionVectorTable {
-    curel_spel0_sync: [u32; 32],
-    curel_spel0_irq: [u32; 32],
-    curel_spel0_fiq: [u32; 32],
-    curel_spel0_serror: [u32; 32],
-    curel_spelx_sync: [u32; 32],
-    curel_spelx_irq: [u32; 32],
-    curel_spelx_fiq: [u32; 32],
-    curel_spelx_serror: [u32; 32],
-    lowel_aarch64_sync: [u32; 32],
-    lowel_aarch64_irq: [u32; 32],
-    lowel_aarch64_fiq: [u32; 32],
-    lowel_aarch64_serror: [u32; 32],
-    lowel_aarch32_sync: [u32; 32],
-    lowel_aarch32_irq: [u32; 32],
-    lowel_aarch32_fiq: [u32; 32],
-    lowel_aarch32_serror: [u32; 32],
+    cur_el_sp_el0_sync: [u32; 32],
+    cur_el_sp_el0_irq: [u32; 32],
+    cur_el_sp_el0_fiq: [u32; 32],
+    cur_el_sp_el0_serror: [u32; 32],
+    cur_el_sp_elx_sync: [u32; 32],
+    cur_el_sp_elx_irq: [u32; 32],
+    cur_el_sp_elx_fiq: [u32; 32],
+    cur_el_sp_elx_serror: [u32; 32],
+    low_el_aarch64_sync: [u32; 32],
+    low_el_aarch64_irq: [u32; 32],
+    low_el_aarch64_fiq: [u32; 32],
+    low_el_aarch64_serror: [u32; 32],
+    low_el_aarch32_sync: [u32; 32],
+    low_el_aarch32_irq: [u32; 32],
+    low_el_aarch32_fiq: [u32; 32],
+    low_el_aarch32_serror: [u32; 32],
 }
 
 // TODO: EVT per EL -> holded by VBAR_ELx register (needed to elevate from ELx to ELx+1 and decrease when ret from ELx+1 to ELx)
@@ -88,14 +88,8 @@ pub struct ExceptionVectorTable {
     TODO: EVTs for AArch32 in EL1 (so user apps in EL0 can support AArch32)
 */
 
-#[used]
-#[link_section = ".evt64"]
-static EVT64_EL1: ExceptionVectorTable = ExceptionVectorTable {
+// #[used]
+// #[link_section = ".evt64"]
+// static EVT64: ExceptionVectorTable = ExceptionVectorTable {
 
-};
-
-#[used]
-#[link_section = ".evt64"]
-static EVT64_EL3: ExceptionVectorTable = ExceptionVectorTable {
-
-};
+// };

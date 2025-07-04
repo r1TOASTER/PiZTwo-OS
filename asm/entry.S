@@ -16,8 +16,13 @@
 
 .global _start
 _start:
-    // TODO: disable EL2 (no current hypervisor needed)
-    
+    // Check what EL am I in
+    mrs     x0, CurrentEL
+    asr     x0, x0, 2
+    and     x0, x0, #2
+
+    // TODO: Pass control to EL1?
+
     // TODO: configure VBAR registers for EVTs memory (linker script variables)
 
     // TODO: interrup enable
