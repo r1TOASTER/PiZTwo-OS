@@ -17,7 +17,7 @@ OUTPUT_DIR_DEBUG = target/aarch64-unknown-none/debug
 OUTPUT_DIR_RELEASE = target/aarch64-unknown-none/release
 
 # Cargo Outputs files names
-KERNEL_LIB_NAME = libkernel.rlib
+KERNEL_LIB_NAME = libkernel.a
 
 # Cargo Outputs files names #
 KERNEL_LIB_FULL_PATH_DEBUG = $(OUTPUT_DIR_DEBUG)/$(KERNEL_LIB_NAME)

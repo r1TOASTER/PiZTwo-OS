@@ -76,20 +76,24 @@ pub struct ExceptionVectorTable {
     low_el_aarch32_serror: [u32; 32],
 }
 
-// TODO: EVT per EL -> holded by VBAR_ELx register (needed to elevate from ELx to ELx+1 and decrease when ret from ELx+1 to ELx)
-/*
-    EVT_EL1
-    EVT_EL2
-    EVT_EL3
-
-    I Think! (no need for EVT_EL0 cause when exception occures on EL0 it will go to EVT_EL1)
-    Needed to check for exception on EL3 (where it goes? EVT_EL3? or is it an EVT_EL0?)
-
-    TODO: EVTs for AArch32 in EL1 (so user apps in EL0 can support AArch32)
-*/
-
-// #[used]
-// #[link_section = ".evt64"]
-// static EVT64: ExceptionVectorTable = ExceptionVectorTable {
-
-// };
+#[used]
+#[no_mangle]
+#[link_section = ".evt"]
+static EVT: ExceptionVectorTable = ExceptionVectorTable {
+    cur_el_sp_el0_sync: [0; 32],
+    cur_el_sp_el0_irq: [1; 32],
+    cur_el_sp_el0_fiq: [2; 32],
+    cur_el_sp_el0_serror: [3; 32],
+    cur_el_sp_elx_sync: [4; 32],
+    cur_el_sp_elx_irq: [5; 32],
+    cur_el_sp_elx_fiq: [6; 32],
+    cur_el_sp_elx_serror: [7; 32],
+    low_el_aarch64_sync: [8; 32],
+    low_el_aarch64_irq: [9; 32],
+    low_el_aarch64_fiq: [10; 32],
+    low_el_aarch64_serror: [11; 32],
+    low_el_aarch32_sync: [12; 32],
+    low_el_aarch32_irq: [13; 32],
+    low_el_aarch32_fiq: [14; 32],
+    low_el_aarch32_serror: [15; 32],
+};

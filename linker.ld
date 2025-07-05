@@ -1,8 +1,8 @@
 ENTRY(_start)
 
 /*
-    TODO: add .evt64 section (inside the .text)
-    TODO: add .evt64 section variable (for the entry.S to handle configuration)
+    TODO: add .evt section (inside the .text)
+    TODO: add .evt section variable (for the entry.S to handle configuration)
     TODO: add the RAM memory range for the RPi z2w
 */
 
@@ -12,6 +12,8 @@ SECTIONS {
     /* Code segment: readable and executable */
     .text : {
         *(.text)
+        _evt = .;
+        *(.evt)
     }
     . = ALIGN(4K);
 

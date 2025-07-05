@@ -16,18 +16,20 @@
 
 .global _start
 _start:
-    // Check what EL am I in
-    mrs     x0, CurrentEL
-    asr     x0, x0, 2
-    and     x0, x0, #2
+    // Starting at EL2
 
-    // TODO: Pass control to EL1?
-
-    // TODO: configure VBAR registers for EVTs memory (linker script variables)
+    // Configuring EVT location in memory inside VBAR_EL1 register
+    mrs     x0, VBAR_EL1
+    ldr     x1, =_evt
+    lsl     x1, x1, #0xb
+    and     x0, x0, x1
+    msr     VBAR_EL1, x0
 
     // TODO: interrup enable
-    
-    mrs     x0, MPIDR_EL1 // read the MPIDR_EL1 (3??) system reg to x5 - 64 bit
+    // TODO: set stacks accordingly to core
+    // TODO: Pass control to EL1?
+
+    mrs     x0, MPIDR_EL1 // read the MPIDR_EL1 system reg to x0 - 64 bit
     // bits 0-7 (Aff0) holding the current core id
     and     x0, x0, #0xff
     // if the core is zero, branch to kernel_main
