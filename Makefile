@@ -2,6 +2,7 @@
 
 # Configuration
 CARGO = cargo +nightly
+RUST_TARGET = aarch64-unknown-none
 AS = aarch64-none-elf-as
 LD = aarch64-none-elf-ld
 QEMU = qemu-system-aarch64
@@ -13,15 +14,15 @@ ASM_SRC = $(wildcard $(ASM_DIR)/*.S)
 ASM_OBJ = $(patsubst $(ASM_DIR)/%.S,$(BUILD_DIR)/%.o,$(ASM_SRC))
 
 # Cargo Outputs directories #
-OUTPUT_DIR_DEBUG = target/aarch64-unknown-none/debug
-OUTPUT_DIR_RELEASE = target/aarch64-unknown-none/release
+OUTPUT_DIR_DEBUG = target/$(RUST_TARGET)/debug
+OUTPUT_DIR_RELEASE = target/$(RUST_TARGET)/release
 
 # Cargo Outputs files names
-KERNEL_LIB_NAME = libkernel.a
+KERNEL_LIB_NAME = libkernel.rlib
 
 # Cargo Outputs files names #
-KERNEL_LIB_FULL_PATH_DEBUG = $(OUTPUT_DIR_DEBUG)/$(KERNEL_LIB_NAME)
-KERNEL_LIB_FULL_PATH_RELEASE = $(OUTPUT_DIR_RELEASE)/$(KERNEL_LIB_NAME)
+KERNEL_LIB_FULL_PATH_DEBUG = $(OUTPUT_DIR_DEBUG)/deps/kernel-*.o
+KERNEL_LIB_FULL_PATH_RELEASE = $(OUTPUT_DIR_RELEASE)/deps/kernel-*.o
 
 # Output images #
 KERNEL = $(BUILD_DIR)/kernel.elf
@@ -47,13 +48,13 @@ all: build
 
 .PHONY: build
 build: $(ASM_OBJ)
-	$(CARGO) build --target aarch64-unknown-none --manifest-path kernel/Cargo.toml
+	$(CARGO) rustc --target $(RUST_TARGET) --manifest-path kernel/Cargo.toml -- --emit=obj
 	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ASM_OBJ) $(KERNEL_LIB_FULL_PATH_DEBUG) -o $(KERNEL)
 	aarch64-none-elf-objcopy -O binary $(KERNEL) $(KERNEL_IMG)
 
 .PHONY: build-release
 build-release: $(ASM_OBJ)
-	$(CARGO) build --release --target aarch64-unknown-none --manifest-path kernel/Cargo.toml
+	$(CARGO) rustc --release --target $(RUST_TARGET) --manifest-path kernel/Cargo.toml -- --emit=obj
 	$(LD) -T $(LINKER_SCRIPT) $(LINKING_FLAGS) $(ASM_OBJ) $(KERNEL_LIB_FULL_PATH_RELEASE) -o $(KERNEL_RELEASE)
 	aarch64-none-elf-objcopy -O binary $(KERNEL_RELEASE) $(KERNEL_IMG)
 
