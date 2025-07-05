@@ -2,12 +2,11 @@
 name = "kernel"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 
-[lib]
-crate-type = ["rlib"]
-
-[dependencies]
-# Add any kernel-specific dependencies
+[[bin]]
+name = "kernel"
+path = "src/main.rs"
 
 [profile.dev]
 panic = "abort"

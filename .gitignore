@@ -2,3 +2,4 @@
 /.vscode
 /output
 Planning.txt
+/kernel/build.rs
