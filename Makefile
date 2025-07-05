@@ -3,17 +3,12 @@
 # Configuration
 CARGO = cargo +nightly
 RUST_TARGET = aarch64-unknown-none
-AS = aarch64-none-elf-as
-LD = aarch64-none-elf-ld
 QEMU = qemu-system-aarch64
 BUILD_DIR = output
 
 # Cargo Outputs directories #
 OUTPUT_DIR_DEBUG = target/$(RUST_TARGET)/debug
 OUTPUT_DIR_RELEASE = target/$(RUST_TARGET)/release
-
-# Cargo Outputs files names
-KERNEL_LIB_NAME = libkernel.rlib
 
 # Cargo Outputs files names #
 KERNEL_FULL_PATH_DEBUG = $(OUTPUT_DIR_DEBUG)/kernel
