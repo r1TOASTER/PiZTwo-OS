@@ -43,7 +43,7 @@ build-release:
 .PHONY: run
 run: build
 	$(QEMU) -M raspi3b \
-	-kernel $(KERNEL_IMG) \
+	-kernel $(KERNEL_DEBUG_IMG) \
 	-semihosting-config enable=on,target=native \
 	-serial none -serial mon:stdio \
 	-display none \
@@ -53,7 +53,7 @@ run: build
 .PHONY: run-release
 run-release: build-release
 	$(QEMU) -M raspi3b \
-	-kernel $(KERNEL_IMG) \
+	-kernel $(KERNEL_RELEASE_IMG) \
 	-serial none -serial mon:stdio \
 	-display none \
 	-cpu cortex-a53 \
