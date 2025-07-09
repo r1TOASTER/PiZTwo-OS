@@ -22,8 +22,8 @@
         -S -gdb tcp::9999
 */
 
-/// INFO:
-/// https://www.linkedin.com/advice/0/how-do-you-configure-exception-vector-table-armv8-a
+// INFO:
+// https://www.linkedin.com/advice/0/how-do-you-configure-exception-vector-table-armv8-a
 
 /*
 The exception vector table is a contiguous block of memory that contains the addresses of the exception handlers for each type of exception.
