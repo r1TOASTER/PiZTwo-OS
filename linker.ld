@@ -1,8 +1,7 @@
 ENTRY(_start)
 
 /*
-    TODO: add .evt section (inside the .text)
-    TODO: add .evt section variable (for the entry.S to handle configuration)
+    TODO: make a reasonable evt address
     TODO: add the RAM memory range for the RPi z2w
 */
 
