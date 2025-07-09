@@ -1,51 +1,65 @@
 .section .evt
 
+/*
+    @brief - the evt is the exception vectors table - holding the instructions on each exception that should happen - on aarch64 mode
+    the entry evt is 2048 (2k) bytes aligned, each entry 0x80 (32 instructions)
+    every exception label has it's own explenations (divided to 4 groups - each has Sync, IRQ, FIQ and SError)
+
+    first group - cur_el_sp_el0 - exception made from the same EL (EL1 -> EL1), and using the SP of EL0
+    second group - cur_el_sp_elx - exception made from the same EL (EL1 -> EL1), and using the SP of the same EL (EL1 -> EL1)
+    third group - low_el_aarch64 - exception made from lower EL (only EL0), the arch that made the exception is aarch64
+    fourth group - low_el_aarch32 - exception made from lower EL (only EL0), the arch that made the exception is aarch32
+ */
+
 .global exception_vector_table
+.balign 2048 // makes the entire EVT 2048 bytes aligned - aarch64 specs
 exception_vector_table:
-.org 0x0000
+
+.balign 0x80
 cur_el_sp_el0_sync:
 
-.org 0x0080
+.balign 0x80
 cur_el_sp_el0_irq:
 
-.org 0x0100
+.balign 0x80
 cur_el_sp_el0_fiq:
 
-.org 0x0180
+.balign 0x80
 cur_el_sp_el0_serror:
 
-.org 0x0200
+.balign 0x80
 cur_el_sp_elx_sync:
 
-.org 0x0280
+.balign 0x80
 cur_el_sp_elx_irq:
 
-.org 0x0300
+.balign 0x80
 cur_el_sp_elx_fiq:
 
-.org 0x0380
+.balign 0x80
 cur_el_sp_elx_serror:
 
-.org 0x0400
+.balign 0x80
 low_el_aarch64_sync:
 
-.org 0x0480
+.balign 0x80
 low_el_aarch64_irq:
 
-.org 0x0500
+.balign 0x80
 low_el_aarch64_fiq:
 
-.org 0x0580
+.balign 0x80
 low_el_aarch64_serror:
 
-.org 0x0600
+.balign 0x80
 low_el_aarch32_sync:
 
-.org 0x0680
+.balign 0x80
 low_el_aarch32_irq:
 
-.org 0x0700
+.balign 0x80
 low_el_aarch32_fiq:
 
-.org 0x0780
+.balign 0x80
 low_el_aarch32_serror:
+    nop

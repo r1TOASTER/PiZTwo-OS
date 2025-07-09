@@ -8,6 +8,8 @@ fn main() {
     let out_dir_path = env::var("PWD").expect("failed to get PWD env") + "/output";
     let out_dir = Path::new(out_dir_path.as_str());
 
+    println!("cargo:rerun-if-changed={}", "linker.ld");
+
     // Make sure output dir exists
     fs::create_dir_all(&out_dir).unwrap();
 

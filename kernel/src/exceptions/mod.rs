@@ -3,9 +3,7 @@
 // Synchronous, IRQ, FIEQ, SError, SoftwareInterrupt (SWI, System call)
 // 
 // TODO: check execution mode (aarch64 vs aarch32 and accordingly do the setup, info under)
-// TODO: check if needed for every exeception level (rings, EL0 [usermode] to EL3 [kernel]) and mode (AArch64 vs AArch32)
 // TODO: test all with SP, PC, and such
-// TODO: Memory alignment for the EVT with enough space for entries - for aarch64: 2KB, for aarch32: 1KB
 // TODO: When EVT all setup - change Makefile to use -device loader instead of -kernel (real hardware mode with EL3 and self EVT)
 
 /*  -- can be kernel8.img instead of kernel.elf

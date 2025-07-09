@@ -20,7 +20,7 @@ _start:
 
     // Configuring EVT location in memory inside VBAR_EL1 register
     mrs     x0, VBAR_EL1
-    ldr     x1, =_evt
+    adrp    x1, _evt
     lsl     x1, x1, #0xb
     and     x0, x0, x1
     msr     VBAR_EL1, x0
