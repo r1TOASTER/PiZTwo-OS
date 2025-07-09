@@ -4,7 +4,6 @@
     TODO: clear bss
     TODO: mov to .data whatever defined as rodata / data (maybe not rodata)
     TODO: stack pointer alignment and assignment (changed for cores)
-    TODO: EVT check? ISRs? check execution levels!
     TODO: check if any other init needed
     TODO: reset GPRs?
     TODO: MMU and caches init?
