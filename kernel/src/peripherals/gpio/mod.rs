@@ -88,6 +88,13 @@ pub(crate) enum GpioLevel {
     High = 1
 }
 
+#[derive(Copy, Clone, Debug)]
+pub(crate) enum PullState {
+    Off = 0b00,
+    PullDown = 0b01,
+    PullUp = 0b10,
+}
+
 // GPIO configuration registers related, only 0 (add offsets where needed)
 const GPFSEL0: u32 = 0x7E20_0000;
 const GPSET0: u32 = 0x7E20_001C;
@@ -110,11 +117,15 @@ pub(crate) trait GPIO: Sized + Copy + Clone {
     fn select_mode(self, state: GpioState);
     fn set_high(self);
     fn set_low(self);
-    fn get_value(self) -> GpioLevel;
+    fn get_level(self) -> GpioLevel;
     fn consume_event(self) -> bool;
-    fn set_rising_edge(self, enable: bool);
-    fn set_falling_edge(self, enable: bool);
+    fn set_rising_edge_detection(self, enable: bool);
+    fn set_falling_edge_detection(self, enable: bool);
     fn set_high_detection(self, enable: bool);
+    fn set_low_detection(self, enable: bool);
+    fn set_async_rising_edge_detection(self, enable: bool);
+    fn set_async_falling_edge_detection(self, enable: bool);
+    fn set_pull_state(self, state: PullState);
 }
 
 impl GPIO for GpioPin {
@@ -165,7 +176,7 @@ impl GPIO for GpioPin {
         }
     }
 
-    fn get_value(self) -> GpioLevel {
+    fn get_level(self) -> GpioLevel {
         let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
         let reg = (GPLEV0 + reg_offset) as *const u32;
 
@@ -210,7 +221,7 @@ impl GPIO for GpioPin {
         }
     }
 
-    fn set_rising_edge(self, enable: bool) {
+    fn set_rising_edge_detection(self, enable: bool) {
         let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
         let reg = (GPREN0 + reg_offset) as *mut u32;
 
@@ -227,7 +238,7 @@ impl GPIO for GpioPin {
         }
     }
 
-    fn set_falling_edge(self, enable: bool) {
+    fn set_falling_edge_detection(self, enable: bool) {
         let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
         let reg = (GPFEN0 + reg_offset) as *mut u32;
 
@@ -246,7 +257,7 @@ impl GPIO for GpioPin {
 
     fn set_high_detection(self, enable: bool) {
         let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
-        let reg = (GPFEN0 + reg_offset) as *mut u32;
+        let reg = (GPHEN0 + reg_offset) as *mut u32;
 
         let bit_offset: u8 = if (self as u8) > 31 {
             (self as u8) - 32
@@ -254,11 +265,75 @@ impl GPIO for GpioPin {
             self as u8
         };
 
-        // set the bit 1 to enable falling edge detection
+        // set the bit 1 to enable high level detection (doesnt matter what signal)
         match set_reg_val(reg, enable as u32, bit_offset, 1) {
             Ok(_) => {},
             Err(e) => todo!("console print error as debug {:?}", e)
         }
     }
 
+    fn set_low_detection(self, enable: bool) {
+        let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
+        let reg = (GPLEN0 + reg_offset) as *mut u32;
+
+        let bit_offset: u8 = if (self as u8) > 31 {
+            (self as u8) - 32
+        } else {
+            self as u8
+        };
+
+        // set the bit 1 to enable high level detection (doesnt matter what signal)
+        match set_reg_val(reg, enable as u32, bit_offset, 1) {
+            Ok(_) => {},
+            Err(e) => todo!("console print error as debug {:?}", e)
+        }
+    }
+    
+    fn set_async_rising_edge_detection(self, enable: bool) {
+        let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
+        let reg = (GPAREN0 + reg_offset) as *mut u32;
+
+        let bit_offset: u8 = if (self as u8) > 31 {
+            (self as u8) - 32
+        } else {
+            self as u8
+        };
+
+        // set the bit 1 to enable high level detection (doesnt matter what signal)
+        match set_reg_val(reg, enable as u32, bit_offset, 1) {
+            Ok(_) => {},
+            Err(e) => todo!("console print error as debug {:?}", e)
+        }
+    }
+    
+    fn set_async_falling_edge_detection(self, enable: bool) {
+        let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
+        let reg = (GPAFEN0 + reg_offset) as *mut u32;
+
+        let bit_offset: u8 = if (self as u8) > 31 {
+            (self as u8) - 32
+        } else {
+            self as u8
+        };
+
+        // set the bit 1 to enable high level detection (doesnt matter what signal)
+        match set_reg_val(reg, enable as u32, bit_offset, 1) {
+            Ok(_) => {},
+            Err(e) => todo!("console print error as debug {:?}", e)
+        }
+    }
+    
+    fn set_pull_state(self, state: PullState) {
+        // write to GPPUD - state
+
+        // wait 150 cycles
+
+        // Write to GPPUDCLK0/1 - 1
+
+        // wait 150 cycles
+
+        // clear GPPUD - state
+
+        // clear GPPUDCLK0/1 - 0
+    }
 }
