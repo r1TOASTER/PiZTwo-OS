@@ -128,7 +128,7 @@ pub(crate) fn set_high(pin: GpioPin) {
     };
 
     // set the bit 1 to activate the output - set it high
-    match set_reg_val(reg, 1, bit_offset, 3) {
+    match set_reg_val(reg, 1, bit_offset, 1) {
         Ok(_) => {},
         Err(e) => todo!("console print error as debug {:?}", e)
     }
@@ -145,7 +145,7 @@ pub(crate) fn set_low(pin: GpioPin) {
     };
 
     // set the bit 1 to clear the output - set it low
-    match set_reg_val(reg, 1, bit_offset, 3) {
+    match set_reg_val(reg, 1, bit_offset, 1) {
         Ok(_) => {},
         Err(e) => todo!("console print error as debug {:?}", e)
     }
@@ -192,6 +192,23 @@ pub(crate) fn consume_event(pin: GpioPin) -> bool {
             // no event - just return
             return false;
         },
+        Err(e) => todo!("console print error as debug {:?}", e)
+    }
+}
+
+pub(crate) fn set_rising_edge(pin: GpioPin, enable: bool) {
+    let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
+    let reg = (GPREN0 + reg_offset) as *mut u32;
+
+    let bit_offset: u8 = if (pin as u8) > 31 {
+        (pin as u8) - 32
+    } else {
+        pin as u8
+    };
+
+    // set the bit 1 to enable rising edge detection
+    match set_reg_val(reg, 1, bit_offset, 1) {
+        Ok(_) => {},
         Err(e) => todo!("console print error as debug {:?}", e)
     }
 }
