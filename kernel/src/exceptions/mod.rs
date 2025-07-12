@@ -14,8 +14,7 @@
         -nographic \
         -m 512M \
         -smp 1 \
-        -bios none \
-        -device loader,file=kernel.elf,addr=0x80000,cpu-num=0 \
+        -device loader,file=output/kernel.elf,addr=0x80000 \
         -semihosting-config enable=on,target=native \
         -S -gdb tcp::9999
 */

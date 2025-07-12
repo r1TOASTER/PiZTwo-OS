@@ -1,8 +1,12 @@
+use core::cmp::Ord;
 use core::marker::Sized;
+use core::ops::{BitAndAssign, BitOrAssign, Shl, ShlAssign, Not, Sub};
 
-// TODO: maybe about 8/16 bit scenerio where use ptr offsets / no offsets with bit-wise to keep other register bits info
+pub trait RegSized: 
+Shl<Output = Self> + BitOrAssign + BitAndAssign + ShlAssign + Not<Output = Self> + Sized + From<u8> + Copy + Ord + Sub<Output = Self>
+{
+    const BITS: u8;
 
-pub trait RegSized: Sized {
     unsafe fn mmio_read(addr: *const Self) -> Self {
         core::intrinsics::volatile_load(addr)
     }
@@ -11,8 +15,13 @@ pub trait RegSized: Sized {
     }
 }
 
-impl RegSized for u32 {}
-impl RegSized for u64 {}
+impl RegSized for u32 {
+    const BITS: u8 = u32::BITS as u8;
+}
+impl RegSized for u64 {
+    const BITS: u8 = u64::BITS as u8;
+}
+
 
 // macro_rules! rdwr {
 //     ($t:ident($(reg: $reg_cls:ident, mmio_read: $patrd:literal, mmio_write: $patwr:literal),* $(,)?)) => {

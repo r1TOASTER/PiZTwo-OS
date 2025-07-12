@@ -17,49 +17,64 @@ exception_vector_table:
 
 .balign 0x80
 cur_el_sp_el0_sync:
+    b .
 
 .balign 0x80
 cur_el_sp_el0_irq:
+    b .
 
 .balign 0x80
 cur_el_sp_el0_fiq:
+    b .
 
 .balign 0x80
 cur_el_sp_el0_serror:
+    b .
 
 .balign 0x80
 cur_el_sp_elx_sync:
+	b .
 
 .balign 0x80
 cur_el_sp_elx_irq:
+	b .
 
 .balign 0x80
 cur_el_sp_elx_fiq:
+	b .
 
 .balign 0x80
 cur_el_sp_elx_serror:
+	b .
 
 .balign 0x80
 low_el_aarch64_sync:
+	b .
 
 .balign 0x80
 low_el_aarch64_irq:
+	b .
 
 .balign 0x80
 low_el_aarch64_fiq:
+	b .
 
 .balign 0x80
 low_el_aarch64_serror:
+	b .
 
 .balign 0x80
 low_el_aarch32_sync:
+	b .
 
 .balign 0x80
 low_el_aarch32_irq:
+	b .
 
 .balign 0x80
 low_el_aarch32_fiq:
+	b .
 
 .balign 0x80
 low_el_aarch32_serror:
-    nop
+	b .
