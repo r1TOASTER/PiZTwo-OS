@@ -60,6 +60,8 @@ _start:
 
 
     // TODO: Pass control to EL1?
+    // TODO: Pass DTB to kernel
+    // TODO: Zero bss / Pass it to kernel to zero it
 
     // define a new sp for the current EL (2) - maybe not if not used?
     // set EL1 as aarch64 execution state
