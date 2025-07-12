@@ -1,9 +1,9 @@
 use core::cmp::Ord;
 use core::marker::Sized;
-use core::ops::{BitAndAssign, BitOrAssign, Shl, ShlAssign, Not, Sub};
+use core::ops::{BitAndAssign, BitOrAssign, Shl, ShlAssign, Not, Sub, Shr};
 
 pub trait RegSized: 
-Shl<Output = Self> + BitOrAssign + BitAndAssign + ShlAssign + Not<Output = Self> + Sized + From<u8> + Copy + Ord + Sub<Output = Self>
+Shl<Output = Self> + Shr<Output = Self> + BitOrAssign + BitAndAssign + ShlAssign + Not<Output = Self> + Sized + From<u8> + Copy + Ord + Sub<Output = Self>
 {
     const BITS: u8;
 

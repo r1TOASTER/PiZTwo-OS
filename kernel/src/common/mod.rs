@@ -10,6 +10,40 @@ pub enum CommonErr {
     RegOverflow
 }
 
+pub(crate) fn get_reg_val<T: RegSized>(addr: *const T, field_offset: u8, field_size: u8) -> Result<T, CommonErr> {
+    
+    if field_offset >= T::BITS { 
+        // if the offset is bigger then the amount of bits in T (for example, T:u32 and field_offset is 64)
+        return Err(CommonErr::OffRange);
+    }
+
+    if field_size > T::BITS {
+        // if the field size is bigger then the amount of bits in T (for example, T:u32 and field_size is 33)
+        return Err(CommonErr::OffSize);
+    } 
+
+    if field_size == 0 {
+        // can't have no field
+        return Err(CommonErr::NoSize);
+    }
+
+    if (field_offset as u32 + field_size as u32) > T::BITS as u32 {
+        // can't have offset = 10 and size = 22 when the register is 32 bit for example
+        return Err(CommonErr::RegOverflow);
+    }
+
+    // get original register value
+    let mut val = unsafe { T::mmio_read(addr) };
+
+    // set field mask - bit is on field_size times (field_size = 3 -> field_mask = 0b111)
+    let field_mask = (T::from(1u8) << field_size.into()) - T::from(1u8);
+
+    // clear everything but the field_mask
+    val &= field_mask << field_offset.into();
+    // get the field wanted
+    Ok(val >> field_offset.into())
+}
+
 pub(crate) fn set_reg_val<T: RegSized>(addr: *mut T, value: T, field_offset: u8, field_size: u8) -> Result<(), CommonErr> {
     if field_offset >= T::BITS { 
         // if the offset is bigger then the amount of bits in T (for example, T:u32 and field_offset is 64)
