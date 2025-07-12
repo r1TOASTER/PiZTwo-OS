@@ -6,8 +6,7 @@
 // TODO: detect high / low - enable / disable
 // TODO: pin async - rising / falling edge - enable / disable
 
-use crate::{common::CommonErr, memory::mmio::RegSized};
-use crate::common::{get_reg_val, set_reg_val};
+use crate::common::{get_reg_val, set_reg_val, delay_cycles};
 use core::{{marker::Copy}, {clone::Clone}, {fmt::Debug}};
 
 #[repr(u8)]
@@ -325,15 +324,30 @@ impl GPIO for GpioPin {
     
     fn set_pull_state(self, state: PullState) {
         // write to GPPUD - state
+        set_reg_val(GPPUD as *mut u32, state as u32, 0, 2).unwrap();
 
         // wait 150 cycles
+        delay_cycles(150);
+
+        let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
+        let reg = (GPPUDCLK0 + reg_offset) as *mut u32;
+
+        let bit_offset: u8 = if (self as u8) > 31 {
+            (self as u8) - 32
+        } else {
+            self as u8
+        };
 
         // Write to GPPUDCLK0/1 - 1
+        set_reg_val(reg, 1, bit_offset, 1).unwrap();
 
         // wait 150 cycles
+        delay_cycles(150);
 
         // clear GPPUD - state
+        set_reg_val(GPPUD as *mut u32, 0, 0, 2).unwrap();
 
         // clear GPPUDCLK0/1 - 0
+        set_reg_val(reg, 0, bit_offset, 1).unwrap();
     }
 }
