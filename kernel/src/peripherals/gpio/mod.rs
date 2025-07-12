@@ -111,7 +111,7 @@ pub(crate) fn gpio_select_mode(pin: GpioPin, state: GpioState) {
     }
 }
 
-pub(crate) fn gpio_set_output(pin: GpioPin) {
+pub(crate) fn gpio_set_high(pin: GpioPin) {
     let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
     let reg = (GPSET0 + reg_offset) as *mut u32;
 
@@ -121,15 +121,16 @@ pub(crate) fn gpio_set_output(pin: GpioPin) {
         pin as u8
     };
 
+    // set the bit 1 to activate the output - set it high
     match set_reg_val(reg, 1, bit_offset, 3) {
         Ok(_) => {},
         Err(e) => todo!("console print error as debug {:?}", e)
     }
 }
 
-pub(crate) fn gpio_clear_output(pin: GpioPin) {
+pub(crate) fn gpio_set_low(pin: GpioPin) {
     let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
-    let reg = (GPSET0 + reg_offset) as *mut u32;
+    let reg = (GPCLR0 + reg_offset) as *mut u32;
 
     let bit_offset: u8 = if (pin as u8) > 31 {
         (pin as u8) - 31
@@ -137,7 +138,8 @@ pub(crate) fn gpio_clear_output(pin: GpioPin) {
         pin as u8
     };
 
-    match set_reg_val(reg, 0, bit_offset, 3) {
+    // set the bit 1 to clear the output - set it low
+    match set_reg_val(reg, 1, bit_offset, 3) {
         Ok(_) => {},
         Err(e) => todo!("console print error as debug {:?}", e)
     }
