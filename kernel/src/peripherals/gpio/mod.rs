@@ -168,3 +168,30 @@ pub(crate) fn gpio_get_value(pin: GpioPin) -> GpioLevel {
         Err(e) => todo!("console print error as debug {:?}", e)
     }
 }
+
+pub(crate) fn gpio_consume_event(pin: GpioPin) -> bool {
+    let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
+    let reg = (GPEDS0 + reg_offset) as *mut u32;
+
+    let bit_offset: u8 = if (pin as u8) > 31 {
+        (pin as u8) - 32
+    } else {
+        pin as u8
+    };
+
+    match get_reg_val(reg, bit_offset, 1) {
+        Ok(val) => {
+            if val == 1 {
+                // if there is an event, clear it and then return true
+                match set_reg_val(reg, 1, bit_offset, 1) {
+                    Ok(_) => {},
+                    Err(e) => todo!("console print error as debug {:?}", e)
+                }
+                return true;
+            }
+            // no event - just return
+            return false;
+        },
+        Err(e) => todo!("console print error as debug {:?}", e)
+    }
+}
