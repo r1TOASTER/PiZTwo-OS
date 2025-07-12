@@ -16,12 +16,13 @@
 // #[no_mangle]
 // pub extern fn _Unwind_Resume() { loop {} }
 
-// export?
+// exports - pub(crate) on specific kernel only usage
 pub mod buses;
 pub mod common;
 pub mod cpu;
-pub mod graphics;
+pub mod devicetree;
 pub mod exceptions;
+pub mod graphics;
 pub mod memory;
 pub mod net;
 pub mod peripherals;
@@ -37,7 +38,7 @@ fn panic(_info: &PanicInfo) -> ! {
     abort()
 }
 
-// imports from raw assembly
+// imports from assembly
 unsafe extern {
     unsafe fn _prints_qemu(s: *const u8);
     unsafe fn _exit_qemu();
