@@ -1,4 +1,4 @@
-// TODO: change pin pull state
+// TODO: change self pull state
 // TODO: pull up / down - clock ?
 // TODO: pin level?
 // TODO: pin event detect status?
@@ -10,6 +10,7 @@ use crate::{common::CommonErr, memory::mmio::RegSized};
 use crate::common::{get_reg_val, set_reg_val};
 use core::{{marker::Copy}, {clone::Clone}, {fmt::Debug}};
 
+#[repr(u8)]
 #[derive(Copy, Clone, Debug)]
 pub(crate) enum GpioPin {
     Pin00 = 0,
@@ -105,110 +106,159 @@ const GPPUDCLK0: u32 = 0x7E20_0098;
 const REG_SIZE: u32 = 4; // 32 bit registers
 
 // TODO: write unit tests
-pub(crate) fn select_mode(pin: GpioPin, state: GpioState) {
-    let reg_offset: u32 = ((pin as u32) / 10) * REG_SIZE; // 32 bit register, offset times 4 + base of GPFSEL0
-    let reg = (GPFSEL0 + reg_offset) as *mut u32;
-
-    let bit_offset = ((pin as u8) % 10) * 3; // every mode is 3 bit, offset times 3 + base of register (bit 0)
-
-    match set_reg_val(reg, state as u32, bit_offset, 3) {
-        Ok(_) => {},
-        Err(e) => todo!("console print error as debug {:?}", e)
-    }
+pub(crate) trait GPIO: Sized + Copy + Clone {
+    fn select_mode(self, state: GpioState);
+    fn set_high(self);
+    fn set_low(self);
+    fn get_value(self) -> GpioLevel;
+    fn consume_event(self) -> bool;
+    fn set_rising_edge(self, enable: bool);
+    fn set_falling_edge(self, enable: bool);
+    fn set_high_detection(self, enable: bool);
 }
 
-pub(crate) fn set_high(pin: GpioPin) {
-    let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
-    let reg = (GPSET0 + reg_offset) as *mut u32;
+impl GPIO for GpioPin {
+    
+    fn select_mode(self, state: GpioState) {
+        let reg_offset: u32 = ((self as u32) / 10) * REG_SIZE; // 32 bit register, offset times 4 + base of GPFSEL0
+        let reg = (GPFSEL0 + reg_offset) as *mut u32;
 
-    let bit_offset: u8 = if (pin as u8) > 31 {
-        (pin as u8) - 32
-    } else {
-        pin as u8
-    };
+        let bit_offset = ((self as u8) % 10) * 3; // every mode is 3 bit, offset times 3 + base of register (bit 0)
 
-    // set the bit 1 to activate the output - set it high
-    match set_reg_val(reg, 1, bit_offset, 1) {
-        Ok(_) => {},
-        Err(e) => todo!("console print error as debug {:?}", e)
+        match set_reg_val(reg, state as u32, bit_offset, 3) {
+            Ok(_) => {},
+            Err(e) => todo!("console print error as debug {:?}", e)
+        }
     }
-}
 
-pub(crate) fn set_low(pin: GpioPin) {
-    let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
-    let reg = (GPCLR0 + reg_offset) as *mut u32;
+    fn set_high(self) {
+        let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
+        let reg = (GPSET0 + reg_offset) as *mut u32;
 
-    let bit_offset: u8 = if (pin as u8) > 31 {
-        (pin as u8) - 32
-    } else {
-        pin as u8
-    };
+        let bit_offset: u8 = if (self as u8) > 31 {
+            (self as u8) - 32
+        } else {
+            self as u8
+        };
 
-    // set the bit 1 to clear the output - set it low
-    match set_reg_val(reg, 1, bit_offset, 1) {
-        Ok(_) => {},
-        Err(e) => todo!("console print error as debug {:?}", e)
+        // set the bit 1 to activate the output - set it high
+        match set_reg_val(reg, 1, bit_offset, 1) {
+            Ok(_) => {},
+            Err(e) => todo!("console print error as debug {:?}", e)
+        }
     }
-}
 
-pub(crate) fn get_value(pin: GpioPin) -> GpioLevel {
-    let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
-    let reg = (GPLEV0 + reg_offset) as *const u32;
+    fn set_low(self) {
+        let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
+        let reg = (GPCLR0 + reg_offset) as *mut u32;
 
-    let bit_offset: u8 = if (pin as u8) > 31 {
-        (pin as u8) - 32
-    } else {
-        pin as u8
-    };
+        let bit_offset: u8 = if (self as u8) > 31 {
+            (self as u8) - 32
+        } else {
+            self as u8
+        };
 
-    match get_reg_val(reg, bit_offset, 1) {
-        Ok(val) => {
-            return if val == 1 { GpioLevel::High } else { GpioLevel::Low };
-        },
-        Err(e) => todo!("console print error as debug {:?}", e)
+        // set the bit 1 to clear the output - set it low
+        match set_reg_val(reg, 1, bit_offset, 1) {
+            Ok(_) => {},
+            Err(e) => todo!("console print error as debug {:?}", e)
+        }
     }
-}
 
-pub(crate) fn consume_event(pin: GpioPin) -> bool {
-    let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
-    let reg = (GPEDS0 + reg_offset) as *mut u32;
+    fn get_value(self) -> GpioLevel {
+        let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
+        let reg = (GPLEV0 + reg_offset) as *const u32;
 
-    let bit_offset: u8 = if (pin as u8) > 31 {
-        (pin as u8) - 32
-    } else {
-        pin as u8
-    };
+        let bit_offset: u8 = if (self as u8) > 31 {
+            (self as u8) - 32
+        } else {
+            self as u8
+        };
 
-    match get_reg_val(reg, bit_offset, 1) {
-        Ok(val) => {
-            if val == 1 {
-                // if there is an event, clear it and then return true
-                match set_reg_val(reg, 1, bit_offset, 1) {
-                    Ok(_) => {},
-                    Err(e) => todo!("console print error as debug {:?}", e)
+        match get_reg_val(reg, bit_offset, 1) {
+            Ok(val) => {
+                return if val == 1 { GpioLevel::High } else { GpioLevel::Low };
+            },
+            Err(e) => todo!("console print error as debug {:?}", e)
+        }
+    }
+
+    fn consume_event(self) -> bool {
+        let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
+        let reg = (GPEDS0 + reg_offset) as *mut u32;
+
+        let bit_offset: u8 = if (self as u8) > 31 {
+            (self as u8) - 32
+        } else {
+            self as u8
+        };
+
+        match get_reg_val(reg, bit_offset, 1) {
+            Ok(val) => {
+                if val == 1 {
+                    // if there is an event, clear it and then return true
+                    match set_reg_val(reg, 1, bit_offset, 1) {
+                        Ok(_) => {},
+                        Err(e) => todo!("console print error as debug {:?}", e)
+                    }
+                    return true;
                 }
-                return true;
-            }
-            // no event - just return
-            return false;
-        },
-        Err(e) => todo!("console print error as debug {:?}", e)
+                // no event - just return
+                return false;
+            },
+            Err(e) => todo!("console print error as debug {:?}", e)
+        }
     }
-}
 
-pub(crate) fn set_rising_edge(pin: GpioPin, enable: bool) {
-    let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
-    let reg = (GPREN0 + reg_offset) as *mut u32;
+    fn set_rising_edge(self, enable: bool) {
+        let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
+        let reg = (GPREN0 + reg_offset) as *mut u32;
 
-    let bit_offset: u8 = if (pin as u8) > 31 {
-        (pin as u8) - 32
-    } else {
-        pin as u8
-    };
+        let bit_offset: u8 = if (self as u8) > 31 {
+            (self as u8) - 32
+        } else {
+            self as u8
+        };
 
-    // set the bit 1 to enable rising edge detection
-    match set_reg_val(reg, 1, bit_offset, 1) {
-        Ok(_) => {},
-        Err(e) => todo!("console print error as debug {:?}", e)
+        // set the bit 1 to enable rising edge detection
+        match set_reg_val(reg, enable as u32, bit_offset, 1) {
+            Ok(_) => {},
+            Err(e) => todo!("console print error as debug {:?}", e)
+        }
     }
+
+    fn set_falling_edge(self, enable: bool) {
+        let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
+        let reg = (GPFEN0 + reg_offset) as *mut u32;
+
+        let bit_offset: u8 = if (self as u8) > 31 {
+            (self as u8) - 32
+        } else {
+            self as u8
+        };
+
+        // set the bit 1 to enable falling edge detection
+        match set_reg_val(reg, enable as u32, bit_offset, 1) {
+            Ok(_) => {},
+            Err(e) => todo!("console print error as debug {:?}", e)
+        }
+    }
+
+    fn set_high_detection(self, enable: bool) {
+        let reg_offset: u32 = ((self as u32) / 32) * REG_SIZE;
+        let reg = (GPFEN0 + reg_offset) as *mut u32;
+
+        let bit_offset: u8 = if (self as u8) > 31 {
+            (self as u8) - 32
+        } else {
+            self as u8
+        };
+
+        // set the bit 1 to enable falling edge detection
+        match set_reg_val(reg, enable as u32, bit_offset, 1) {
+            Ok(_) => {},
+            Err(e) => todo!("console print error as debug {:?}", e)
+        }
+    }
+
 }
