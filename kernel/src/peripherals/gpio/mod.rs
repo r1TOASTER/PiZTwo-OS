@@ -105,7 +105,7 @@ const GPPUDCLK0: u32 = 0x7E20_0098;
 const REG_SIZE: u32 = 4; // 32 bit registers
 
 // TODO: write unit tests
-pub(crate) fn gpio_select_mode(pin: GpioPin, state: GpioState) {
+pub(crate) fn select_mode(pin: GpioPin, state: GpioState) {
     let reg_offset: u32 = ((pin as u32) / 10) * REG_SIZE; // 32 bit register, offset times 4 + base of GPFSEL0
     let reg = (GPFSEL0 + reg_offset) as *mut u32;
 
@@ -117,7 +117,7 @@ pub(crate) fn gpio_select_mode(pin: GpioPin, state: GpioState) {
     }
 }
 
-pub(crate) fn gpio_set_high(pin: GpioPin) {
+pub(crate) fn set_high(pin: GpioPin) {
     let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
     let reg = (GPSET0 + reg_offset) as *mut u32;
 
@@ -134,7 +134,7 @@ pub(crate) fn gpio_set_high(pin: GpioPin) {
     }
 }
 
-pub(crate) fn gpio_set_low(pin: GpioPin) {
+pub(crate) fn set_low(pin: GpioPin) {
     let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
     let reg = (GPCLR0 + reg_offset) as *mut u32;
 
@@ -151,7 +151,7 @@ pub(crate) fn gpio_set_low(pin: GpioPin) {
     }
 }
 
-pub(crate) fn gpio_get_value(pin: GpioPin) -> GpioLevel {
+pub(crate) fn get_value(pin: GpioPin) -> GpioLevel {
     let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
     let reg = (GPLEV0 + reg_offset) as *const u32;
 
@@ -169,7 +169,7 @@ pub(crate) fn gpio_get_value(pin: GpioPin) -> GpioLevel {
     }
 }
 
-pub(crate) fn gpio_consume_event(pin: GpioPin) -> bool {
+pub(crate) fn consume_event(pin: GpioPin) -> bool {
     let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
     let reg = (GPEDS0 + reg_offset) as *mut u32;
 
