@@ -7,7 +7,7 @@
 // TODO: pin async - rising / falling edge - enable / disable
 
 use crate::{common::CommonErr, memory::mmio::RegSized};
-use crate::common::set_reg_val;
+use crate::common::{get_reg_val, set_reg_val};
 use core::{{marker::Copy}, {clone::Clone}, {fmt::Debug}};
 
 #[derive(Copy, Clone, Debug)]
@@ -81,6 +81,12 @@ pub(crate) enum GpioState {
     Alt5 = 0b010
 }
 
+#[derive(Copy, Clone, Debug)]
+pub(crate) enum GpioLevel {
+    Low = 0,
+    High = 1
+}
+
 // GPIO configuration registers related, only 0 (add offsets where needed)
 const GPFSEL0: u32 = 0x7E20_0000;
 const GPSET0: u32 = 0x7E20_001C;
@@ -116,7 +122,7 @@ pub(crate) fn gpio_set_high(pin: GpioPin) {
     let reg = (GPSET0 + reg_offset) as *mut u32;
 
     let bit_offset: u8 = if (pin as u8) > 31 {
-        (pin as u8) - 31
+        (pin as u8) - 32
     } else {
         pin as u8
     };
@@ -133,7 +139,7 @@ pub(crate) fn gpio_set_low(pin: GpioPin) {
     let reg = (GPCLR0 + reg_offset) as *mut u32;
 
     let bit_offset: u8 = if (pin as u8) > 31 {
-        (pin as u8) - 31
+        (pin as u8) - 32
     } else {
         pin as u8
     };
@@ -141,6 +147,24 @@ pub(crate) fn gpio_set_low(pin: GpioPin) {
     // set the bit 1 to clear the output - set it low
     match set_reg_val(reg, 1, bit_offset, 3) {
         Ok(_) => {},
+        Err(e) => todo!("console print error as debug {:?}", e)
+    }
+}
+
+pub(crate) fn gpio_get_value(pin: GpioPin) -> GpioLevel {
+    let reg_offset: u32 = ((pin as u32) / 32) * REG_SIZE;
+    let reg = (GPLEV0 + reg_offset) as *const u32;
+
+    let bit_offset: u8 = if (pin as u8) > 31 {
+        (pin as u8) - 32
+    } else {
+        pin as u8
+    };
+
+    match get_reg_val(reg, bit_offset, 1) {
+        Ok(val) => {
+            return if val == 1 { GpioLevel::High } else { GpioLevel::Low };
+        },
         Err(e) => todo!("console print error as debug {:?}", e)
     }
 }
