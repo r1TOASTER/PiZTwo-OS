@@ -10,6 +10,18 @@ pub enum CommonErr {
     RegOverflow
 }
 
+pub(crate) fn delay_cycles(cycles: u64) {
+    let mut start: u64;
+    let mut current: u64;
+
+    unsafe { core::arch::asm!("mrs {}, PMCCNTR_EL0", out(reg) start) } // get first
+    
+    loop {
+        unsafe { core::arch::asm!("mrs {}, PMCCNTR_EL0", out(reg) current) } // get current
+        if current.wrapping_sub(start) >= cycles { return; }
+    }
+}
+
 pub(crate) fn get_reg_val<T: RegSized>(addr: *const T, field_offset: u8, field_size: u8) -> Result<T, CommonErr> {
     
     if field_offset >= T::BITS { 
